@@ -4,5 +4,5 @@
   "addDnsSuffixList": true,
   "extendBootVolumeSize": true,
   "adminPasswordType": "Specify",
-  "adminPassword":  "random_windows_password"
+  "adminPassword":  "Qwerty11Qwerty!"
 }

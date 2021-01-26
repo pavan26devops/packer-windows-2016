@@ -6,8 +6,7 @@
         "build-vpc": "vpc-bade14d0",
         "build-subnet": "subnet-2346ba6f",
         "build-time": "{{isotime \"2006-01-02\"}}",
-        "aws_ami_region": "eu-central-1",
-        "winrm_user": "Administrator"
+        "aws_ami_region": "eu-central-1"
     },
     "builders": [
       {
@@ -40,8 +39,9 @@
         "user_data_file": "./EC2Bootstrap.ps1",
         "associate_public_ip_address": false,
         "communicator": "winrm",
-        "winrm_username": "{{user `winrm_user`}}",
-        "winrm_timeout": "15m",
+        "winrm_username": "Administrator",
+        "winrm_timeout": "40m",
+        "windows_password_timeout": "30m",
         "winrm_insecure": true,
         "tags": {
                 "OS_Version": "{{user `name-base`}}",
@@ -66,15 +66,14 @@
         ]
       },
       {
-        "type": "file",
-        "source": "launch-config.json",
-        "destination":
-            "C:\\ProgramData\\Amazon\\EC2-Windows\\Launch\\Config\\LaunchConfig.json"
+          "type": "file",
+          "source": "launch-config.json",
+          "destination":
+              "C:\\ProgramData\\Amazon\\EC2-Windows\\Launch\\Config\\LaunchConfig.json"
       },
       {
         "type": "powershell",
         "inline": [
-          "[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12;",
           "wget 'http://javadl.oracle.com/webapps/download/AutoDL?BundleId=210185' -Outfile 'C:\\jreinstaller.exe'",
           "Start-Process -filepath C:\\jreinstaller.exe -passthru -wait -argumentlist \"/s\",\"INSTALLDIR=c:\\Java\\jre1.8.0_91\" ",
           "del C:\\jreinstaller.exe",
@@ -85,9 +84,16 @@
       {
         "type": "powershell",
         "inline": [
-          "C:\\ProgramData\\Amazon\\EC2-Windows\\Launch\\Scripts\\InitializeInstance.ps1 -Schedule",
-          "C:\\ProgramData\\Amazon\\EC2-Windows\\Launch\\Scripts\\SysprepInstance.ps1 -NoShutdown"
+          "java -version"
         ]
+      },
+      {
+        "type": "powershell",
+        "inline": "C:\\ProgramData\\Amazon\\EC2-Windows\\Launch\\Scripts\\InitializeInstance.ps1 -Schedule"
+      },
+      {
+        "type": "powershell",
+        "inline": "C:\\ProgramData\\Amazon\\EC2-Windows\\Launch\\Scripts\\SysprepInstance.ps1"
       }
     ]
 }
